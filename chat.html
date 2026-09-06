@@ -193,7 +193,9 @@
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || "Terjadi kesalahan.");
+          throw new Error(
+            data.error || "Terjadi kesalahan pada server."
+          );
         }
 
         aiMessage.textContent =
@@ -202,8 +204,9 @@
       } catch (error) {
         console.error("Nexora error:", error);
 
+        // Tampilkan error asli untuk debugging
         aiMessage.textContent =
-          "Maaf, Nexora sedang mengalami masalah. Silakan coba lagi.";
+          "Error Nexora: " + error.message;
       }
 
       button.disabled = false;
@@ -223,3 +226,4 @@
 
 </body>
 </html>
+
