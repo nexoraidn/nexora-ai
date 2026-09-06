@@ -1,0 +1,11 @@
+here{
+  "name": "Nexora AI",
+  "short_name": "Nexora",
+  "description": "Nexora AI - Intelligence for a smarter future.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "orientation": "portrait",
+  "icons": []
+}
