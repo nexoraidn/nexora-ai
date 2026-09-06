@@ -58,6 +58,7 @@
       padding: 14px 18px;
       border-radius: 12px;
       line-height: 1.5;
+      white-space: pre-wrap;
     }
 
     .user {
@@ -105,6 +106,11 @@
     button:hover {
       opacity: 0.85;
     }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: wait;
+    }
   </style>
 </head>
 
@@ -144,7 +150,7 @@
     const chat = document.getElementById("chat");
     const welcome = document.getElementById("welcome");
 
-    function sendMessage() {
+    async function sendMessage() {
       const message = input.value.trim();
 
       if (message === "") {
@@ -153,20 +159,55 @@
 
       welcome.style.display = "none";
 
+      // Tampilkan pesan pengguna
       const userMessage = document.createElement("div");
       userMessage.className = "message user";
       userMessage.textContent = message;
-
       chat.appendChild(userMessage);
 
       input.value = "";
 
+      // Nonaktifkan tombol selama Nexora menjawab
+      button.disabled = true;
+      button.textContent = "Menjawab...";
+
+      // Tampilkan placeholder jawaban AI
       const aiMessage = document.createElement("div");
       aiMessage.className = "message ai";
-      aiMessage.textContent =
-        "Halo! Saya Nexora AI. Pesan kamu sudah diterima. 🤖";
-
+      aiMessage.textContent = "Nexora sedang berpikir...";
       chat.appendChild(aiMessage);
+
+      chat.scrollTop = chat.scrollHeight;
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: message
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Terjadi kesalahan.");
+        }
+
+        aiMessage.textContent =
+          data.reply || "Nexora tidak memberikan jawaban.";
+
+      } catch (error) {
+        console.error("Nexora error:", error);
+
+        aiMessage.textContent =
+          "Maaf, Nexora sedang mengalami masalah. Silakan coba lagi.";
+      }
+
+      button.disabled = false;
+      button.textContent = "Kirim";
 
       chat.scrollTop = chat.scrollHeight;
     }
