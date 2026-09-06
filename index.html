@@ -11,6 +11,9 @@
     content="Nexora AI - Intelligent technology for a smarter future."
   >
 
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#050505">
+
   <style>
     * {
       margin: 0;
@@ -175,6 +178,14 @@
   <footer>
     © 2026 Nexora AI. All rights reserved.
   </footer>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js");
+      });
+    }
+  </script>
 
 </body>
 </html>
