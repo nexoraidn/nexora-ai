@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Nexora AI Chat</title>
+  <title>Nexora AI</title>
 
   <style>
     * {
@@ -33,25 +33,41 @@
 
     .chat {
       height: calc(100vh - 150px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      overflow-y: auto;
+      padding: 30px 20px 120px;
     }
 
     .welcome {
-      text-align: center;
       max-width: 600px;
+      margin: 120px auto 0;
+      text-align: center;
     }
 
-    h1 {
+    .welcome h1 {
       font-size: 40px;
       margin-bottom: 15px;
     }
 
-    p {
+    .welcome p {
       color: #888;
-      line-height: 1.6;
+    }
+
+    .message {
+      max-width: 700px;
+      margin: 15px auto;
+      padding: 14px 18px;
+      border-radius: 12px;
+      line-height: 1.5;
+    }
+
+    .user {
+      background: #1a1a1a;
+      text-align: right;
+    }
+
+    .ai {
+      background: #101010;
+      border: 1px solid #222;
     }
 
     .input-area {
@@ -73,6 +89,7 @@
       border-radius: 10px;
       color: white;
       outline: none;
+      font-size: 15px;
     }
 
     button {
@@ -84,6 +101,10 @@
       font-weight: bold;
       cursor: pointer;
     }
+
+    button:hover {
+      opacity: 0.85;
+    }
   </style>
 </head>
 
@@ -93,14 +114,11 @@
     <div class="logo">NEXORA AI</div>
   </header>
 
-  <main class="chat">
+  <main id="chat" class="chat">
 
-    <div class="welcome">
+    <div id="welcome" class="welcome">
       <h1>Halo, saya Nexora AI.</h1>
-
-      <p>
-        Apa yang ingin kamu lakukan hari ini?
-      </p>
+      <p>Apa yang ingin kamu lakukan hari ini?</p>
     </div>
 
   </main>
@@ -108,15 +126,59 @@
   <div class="input-area">
 
     <input
+      id="messageInput"
       type="text"
       placeholder="Tanyakan sesuatu kepada Nexora AI..."
+      autocomplete="off"
     >
 
-    <button>
+    <button id="sendButton">
       Kirim
     </button>
 
   </div>
+
+  <script>
+    const input = document.getElementById("messageInput");
+    const button = document.getElementById("sendButton");
+    const chat = document.getElementById("chat");
+    const welcome = document.getElementById("welcome");
+
+    function sendMessage() {
+      const message = input.value.trim();
+
+      if (message === "") {
+        return;
+      }
+
+      welcome.style.display = "none";
+
+      const userMessage = document.createElement("div");
+      userMessage.className = "message user";
+      userMessage.textContent = message;
+
+      chat.appendChild(userMessage);
+
+      input.value = "";
+
+      const aiMessage = document.createElement("div");
+      aiMessage.className = "message ai";
+      aiMessage.textContent =
+        "Halo! Saya Nexora AI. Pesan kamu sudah diterima. 🤖";
+
+      chat.appendChild(aiMessage);
+
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    button.addEventListener("click", sendMessage);
+
+    input.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
+    });
+  </script>
 
 </body>
 </html>
