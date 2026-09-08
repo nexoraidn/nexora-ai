@@ -10,9 +10,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // =========================
     // 1. Kirim pesan ke OpenAI
-    // =========================
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
@@ -35,9 +33,7 @@ export default async function handler(req, res) {
 
     const reply = data.output_text;
 
-    // =========================
-    // 2. Simpan ke Supabase
-    // =========================
+    // 2. Simpan percakapan ke Supabase
     const supabaseResponse = await fetch(
       `${process.env.SUPABASE_URL}/rest/v1/conversations`,
       {
@@ -50,7 +46,8 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           message: message,
-          reply: reply
+          reply: reply,
+          created_at: new Date().toISOString()
         })
       }
     );
@@ -65,9 +62,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // =========================
     // 3. Kirim balasan ke chat
-    // =========================
     return res.status(200).json({
       reply: reply
     });
