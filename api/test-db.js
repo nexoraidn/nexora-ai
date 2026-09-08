@@ -12,7 +12,8 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           message: "Test Nexora",
-          reply: "Supabase berhasil menerima data."
+          reply: "Supabase berhasil menerima data.",
+          created_at: new Date().toISOString()
         })
       }
     );
