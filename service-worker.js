@@ -1,9 +1,12 @@
-const CACHE_NAME = "nexora-ai-v1";
+const CACHE_NAME = "nexora-ai-v2";
 
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
-  "/chat.html"
+  "/chat.html",
+  "/manifest.json",
+  "/icon-192.png",
+  "/icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
@@ -12,6 +15,22 @@ self.addEventListener("install", (event) => {
       return cache.addAll(FILES_TO_CACHE);
     })
   );
+
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((cacheName) => cacheName !== CACHE_NAME)
+          .map((cacheName) => caches.delete(cacheName))
+      );
+    })
+  );
+
+  self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
