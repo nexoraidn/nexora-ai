@@ -39,6 +39,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
       border-bottom: 1px solid #1f1f1f;
       background: rgba(5, 5, 5, 0.95);
     }
@@ -47,6 +48,36 @@
       font-size: 20px;
       font-weight: 700;
       letter-spacing: 1px;
+    }
+
+    .new-chat-button {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      background: #111111;
+      color: #ffffff;
+      border: 1px solid #292929;
+      border-radius: 12px;
+      font-size: 25px;
+      font-weight: 400;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .new-chat-button:hover {
+      background: #181818;
+      opacity: 1;
+      transform: translateY(-50%);
+    }
+
+    .new-chat-button:active {
+      transform: translateY(-50%) scale(0.95);
     }
 
     .chat {
@@ -210,6 +241,12 @@
       transform: none;
     }
 
+    .new-chat-button:disabled {
+      opacity: 0.5;
+      cursor: wait;
+      transform: translateY(-50%);
+    }
+
     @media (max-width: 600px) {
       .chat {
         padding: 20px 12px 110px;
@@ -236,6 +273,12 @@
       button {
         padding: 12px 15px;
       }
+
+      .new-chat-button {
+        left: 8px;
+        width: 38px;
+        height: 38px;
+      }
     }
   </style>
 </head>
@@ -243,7 +286,18 @@
 <body>
 
   <header>
+
+    <button
+      id="newChatButton"
+      class="new-chat-button"
+      aria-label="Chat baru"
+      title="Chat baru"
+    >
+      +
+    </button>
+
     <div class="logo">NEXORA AI</div>
+
   </header>
 
   <main id="chat" class="chat">
@@ -273,75 +327,332 @@
   <script>
     const input = document.getElementById("messageInput");
     const button = document.getElementById("sendButton");
+    const newChatButton = document.getElementById("newChatButton");
     const chat = document.getElementById("chat");
     const welcome = document.getElementById("welcome");
 
     /* =========================
-       CHAT HISTORY
+       MULTI CONVERSATION
     ========================= */
 
-    const STORAGE_KEY = "nexora_ai_chat_history";
+    const CHATS_KEY = "nexora_ai_chats";
+    const ACTIVE_CHAT_KEY = "nexora_ai_active_chat";
 
-    let chatHistory = [];
+    let conversations = [];
+    let activeChatId = null;
 
-    function loadChatHistory() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
+    /* =========================
+       CREATE CONVERSATION
+    ========================= */
 
-        if (saved) {
-          chatHistory = JSON.parse(saved);
-        }
-      } catch (error) {
-        console.error("Gagal membaca riwayat chat:", error);
-        chatHistory = [];
-      }
+    function createConversation() {
+      const conversation = {
+        id: Date.now().toString(),
+        title: "Percakapan baru",
+        messages: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      };
 
-      renderChatHistory();
+      conversations.push(conversation);
+
+      activeChatId = conversation.id;
+
+      saveConversations();
+
+      return conversation;
     }
 
-    function saveChatHistory() {
+    /* =========================
+       GET ACTIVE CONVERSATION
+    ========================= */
+
+    function getActiveConversation() {
+      return conversations.find(
+        (conversation) =>
+          conversation.id === activeChatId
+      );
+    }
+
+    /* =========================
+       SAVE CONVERSATIONS
+    ========================= */
+
+    function saveConversations() {
       try {
         localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify(chatHistory)
+          CHATS_KEY,
+          JSON.stringify(conversations)
+        );
+
+        localStorage.setItem(
+          ACTIVE_CHAT_KEY,
+          activeChatId || ""
         );
       } catch (error) {
-        console.error("Gagal menyimpan riwayat chat:", error);
+        console.error(
+          "Gagal menyimpan percakapan:",
+          error
+        );
       }
     }
 
-    function addMessageToHistory(role, content) {
-      chatHistory.push({
-        role: role,
-        content: content,
-        timestamp: Date.now()
-      });
+    /* =========================
+       LOAD CONVERSATIONS
+    ========================= */
 
-      saveChatHistory();
+    function loadConversations() {
+      try {
+        const savedChats =
+          localStorage.getItem(CHATS_KEY);
+
+        const savedActiveChat =
+          localStorage.getItem(ACTIVE_CHAT_KEY);
+
+        if (savedChats) {
+          conversations =
+            JSON.parse(savedChats);
+        }
+
+        if (savedActiveChat) {
+          activeChatId =
+            savedActiveChat;
+        }
+
+      } catch (error) {
+        console.error(
+          "Gagal membaca percakapan:",
+          error
+        );
+
+        conversations = [];
+        activeChatId = null;
+      }
+
+      /*
+        MIGRASI RIWAYAT LAMA
+        Supaya chat yang sudah tersimpan
+        sebelum fitur New Chat tidak hilang.
+      */
+
+      migrateOldHistory();
+
+      /*
+        Kalau belum ada percakapan,
+        buat percakapan pertama.
+      */
+
+      if (conversations.length === 0) {
+        createConversation();
+      }
+
+      /*
+        Kalau activeChatId sudah tidak ditemukan,
+        gunakan percakapan terakhir.
+      */
+
+      const activeConversation =
+        getActiveConversation();
+
+      if (!activeConversation) {
+        const lastConversation =
+          conversations[
+            conversations.length - 1
+          ];
+
+        activeChatId =
+          lastConversation.id;
+
+        saveConversations();
+      }
+
+      renderActiveConversation();
     }
 
-    function renderChatHistory() {
-      if (chatHistory.length === 0) {
+    /* =========================
+       MIGRATE OLD HISTORY
+    ========================= */
+
+    function migrateOldHistory() {
+      const OLD_STORAGE_KEY =
+        "nexora_ai_chat_history";
+
+      try {
+        const oldHistory =
+          localStorage.getItem(
+            OLD_STORAGE_KEY
+          );
+
+        if (
+          !oldHistory ||
+          conversations.length > 0
+        ) {
+          return;
+        }
+
+        const messages =
+          JSON.parse(oldHistory);
+
+        if (
+          !Array.isArray(messages) ||
+          messages.length === 0
+        ) {
+          return;
+        }
+
+        const firstUserMessage =
+          messages.find(
+            (item) =>
+              item.role === "user"
+          );
+
+        const title =
+          firstUserMessage &&
+          firstUserMessage.content
+            ? firstUserMessage.content
+                .slice(0, 40)
+            : "Percakapan sebelumnya";
+
+        const migratedConversation = {
+          id: Date.now().toString(),
+          title: title,
+          messages: messages,
+          createdAt:
+            messages[0].timestamp ||
+            Date.now(),
+          updatedAt:
+            messages[
+              messages.length - 1
+            ].timestamp ||
+            Date.now()
+        };
+
+        conversations.push(
+          migratedConversation
+        );
+
+        activeChatId =
+          migratedConversation.id;
+
+        saveConversations();
+
+        /*
+          Hapus storage lama hanya setelah
+          data berhasil dipindahkan.
+        */
+
+        localStorage.removeItem(
+          OLD_STORAGE_KEY
+        );
+
+      } catch (error) {
+        console.error(
+          "Gagal migrasi riwayat lama:",
+          error
+        );
+      }
+    }
+
+    /* =========================
+       CLEAR DISPLAY
+    ========================= */
+
+    function clearChatDisplay() {
+      const messages =
+        chat.querySelectorAll(
+          ".message-wrapper"
+        );
+
+      messages.forEach((message) => {
+        message.remove();
+      });
+    }
+
+    /* =========================
+       RENDER ACTIVE CHAT
+    ========================= */
+
+    function renderActiveConversation() {
+      clearChatDisplay();
+
+      const conversation =
+        getActiveConversation();
+
+      if (
+        !conversation ||
+        conversation.messages.length === 0
+      ) {
         welcome.style.display = "block";
         return;
       }
 
       welcome.style.display = "none";
 
-      chatHistory.forEach((item) => {
-        createMessageElement(
-          item.role,
-          item.content
-        );
-      });
+      conversation.messages.forEach(
+        (item) => {
+          createMessageElement(
+            item.role,
+            item.content
+          );
+        }
+      );
 
       setTimeout(() => {
-        chat.scrollTop = chat.scrollHeight;
+        chat.scrollTop =
+          chat.scrollHeight;
       }, 50);
     }
 
-    function createMessageElement(role, content) {
-      const wrapper = document.createElement("div");
+    /* =========================
+       ADD MESSAGE
+    ========================= */
+
+    function addMessageToHistory(
+      role,
+      content
+    ) {
+      const conversation =
+        getActiveConversation();
+
+      if (!conversation) {
+        return;
+      }
+
+      conversation.messages.push({
+        role: role,
+        content: content,
+        timestamp: Date.now()
+      });
+
+      /*
+        Judul otomatis dari pesan pertama user.
+      */
+
+      if (
+        role === "user" &&
+        conversation.title ===
+          "Percakapan baru"
+      ) {
+        conversation.title =
+          content.slice(0, 40);
+      }
+
+      conversation.updatedAt =
+        Date.now();
+
+      saveConversations();
+    }
+
+    /* =========================
+       CREATE MESSAGE ELEMENT
+    ========================= */
+
+    function createMessageElement(
+      role,
+      content
+    ) {
+      const wrapper =
+        document.createElement("div");
 
       if (role === "user") {
         wrapper.className =
@@ -351,19 +662,69 @@
           "message-wrapper ai-wrapper";
       }
 
-      const message = document.createElement("div");
+      const message =
+        document.createElement("div");
 
       message.className =
         role === "user"
           ? "message user"
           : "message ai";
 
-      message.textContent = content;
+      message.textContent =
+        content;
 
       wrapper.appendChild(message);
+
       chat.appendChild(wrapper);
 
       return message;
+    }
+
+    /* =========================
+       NEW CHAT
+    ========================= */
+
+    function startNewChat() {
+      if (button.disabled) {
+        return;
+      }
+
+      const currentConversation =
+        getActiveConversation();
+
+      const hasMessages =
+        currentConversation &&
+        currentConversation.messages.length > 0;
+
+      if (hasMessages) {
+        const confirmed =
+          confirm(
+            "Mulai chat baru?\n\nPercakapan saat ini tetap tersimpan di browser."
+          );
+
+        if (!confirmed) {
+          return;
+        }
+      }
+
+      /*
+        Jangan hapus percakapan lama.
+        Buat percakapan baru.
+      */
+
+      createConversation();
+
+      renderActiveConversation();
+
+      input.value = "";
+      input.disabled = false;
+
+      button.disabled = false;
+      button.textContent = "Kirim";
+
+      input.focus();
+
+      chat.scrollTop = 0;
     }
 
     /* =========================
@@ -371,21 +732,34 @@
     ========================= */
 
     async function sendMessage() {
-      const message = input.value.trim();
+      const message =
+        input.value.trim();
 
-      if (!message || button.disabled) {
+      if (
+        !message ||
+        button.disabled
+      ) {
         return;
+      }
+
+      const conversation =
+        getActiveConversation();
+
+      if (!conversation) {
+        createConversation();
       }
 
       welcome.style.display = "none";
 
       /* Simpan pesan user */
+
       addMessageToHistory(
         "user",
         message
       );
 
       /* Tampilkan pesan user */
+
       createMessageElement(
         "user",
         message
@@ -394,22 +768,31 @@
       input.value = "";
 
       button.disabled = true;
+      newChatButton.disabled = true;
       input.disabled = true;
-      button.textContent = "Menjawab...";
+
+      button.textContent =
+        "Menjawab...";
 
       /* AI thinking */
-      const aiWrapper = document.createElement("div");
+
+      const aiWrapper =
+        document.createElement("div");
+
       aiWrapper.className =
         "message-wrapper ai-wrapper";
 
-      const aiMessage = document.createElement("div");
+      const aiMessage =
+        document.createElement("div");
+
       aiMessage.className =
         "message ai";
 
       const thinking =
         document.createElement("div");
 
-      thinking.className = "thinking";
+      thinking.className =
+        "thinking";
 
       thinking.innerHTML = `
         <span>Nexora sedang berpikir</span>
@@ -418,26 +801,41 @@
         <span class="dot"></span>
       `;
 
-      aiMessage.appendChild(thinking);
-      aiWrapper.appendChild(aiMessage);
-      chat.appendChild(aiWrapper);
+      aiMessage.appendChild(
+        thinking
+      );
 
-      chat.scrollTop = chat.scrollHeight;
+      aiWrapper.appendChild(
+        aiMessage
+      );
+
+      chat.appendChild(
+        aiWrapper
+      );
+
+      chat.scrollTop =
+        chat.scrollHeight;
 
       try {
-        const response = await fetch("/api/chat", {
-          method: "POST",
+        const response =
+          await fetch(
+            "/api/chat",
+            {
+              method: "POST",
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
 
-          body: JSON.stringify({
-            message: message
-          })
-        });
+              body: JSON.stringify({
+                message: message
+              })
+            }
+          );
 
-        const data = await response.json();
+        const data =
+          await response.json();
 
         if (!response.ok) {
           throw new Error(
@@ -451,9 +849,12 @@
           "Nexora tidak memberikan jawaban.";
 
         /* Tampilkan jawaban AI */
-        aiMessage.textContent = reply;
+
+        aiMessage.textContent =
+          reply;
 
         /* Simpan jawaban AI */
+
         addMessageToHistory(
           "ai",
           reply
@@ -472,8 +873,8 @@
         aiMessage.textContent =
           errorMessage;
 
-        /* Simpan error juga supaya tampilan
-           setelah refresh tetap konsisten */
+        /* Simpan error */
+
         addMessageToHistory(
           "ai",
           errorMessage
@@ -481,12 +882,16 @@
       }
 
       button.disabled = false;
+      newChatButton.disabled = false;
       input.disabled = false;
-      button.textContent = "Kirim";
+
+      button.textContent =
+        "Kirim";
 
       input.focus();
 
-      chat.scrollTop = chat.scrollHeight;
+      chat.scrollTop =
+        chat.scrollHeight;
     }
 
     /* =========================
@@ -496,6 +901,11 @@
     button.addEventListener(
       "click",
       sendMessage
+    );
+
+    newChatButton.addEventListener(
+      "click",
+      startNewChat
     );
 
     input.addEventListener(
@@ -508,16 +918,18 @@
     );
 
     /* =========================
-       LOAD HISTORY
+       LOAD
     ========================= */
 
-    loadChatHistory();
+    loadConversations();
 
     /* =========================
        PWA
     ========================= */
 
-    if ("serviceWorker" in navigator) {
+    if (
+      "serviceWorker" in navigator
+    ) {
       window.addEventListener(
         "load",
         () => {
