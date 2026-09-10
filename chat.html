@@ -276,6 +276,100 @@
     const chat = document.getElementById("chat");
     const welcome = document.getElementById("welcome");
 
+    /* =========================
+       CHAT HISTORY
+    ========================= */
+
+    const STORAGE_KEY = "nexora_ai_chat_history";
+
+    let chatHistory = [];
+
+    function loadChatHistory() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+
+        if (saved) {
+          chatHistory = JSON.parse(saved);
+        }
+      } catch (error) {
+        console.error("Gagal membaca riwayat chat:", error);
+        chatHistory = [];
+      }
+
+      renderChatHistory();
+    }
+
+    function saveChatHistory() {
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(chatHistory)
+        );
+      } catch (error) {
+        console.error("Gagal menyimpan riwayat chat:", error);
+      }
+    }
+
+    function addMessageToHistory(role, content) {
+      chatHistory.push({
+        role: role,
+        content: content,
+        timestamp: Date.now()
+      });
+
+      saveChatHistory();
+    }
+
+    function renderChatHistory() {
+      if (chatHistory.length === 0) {
+        welcome.style.display = "block";
+        return;
+      }
+
+      welcome.style.display = "none";
+
+      chatHistory.forEach((item) => {
+        createMessageElement(
+          item.role,
+          item.content
+        );
+      });
+
+      setTimeout(() => {
+        chat.scrollTop = chat.scrollHeight;
+      }, 50);
+    }
+
+    function createMessageElement(role, content) {
+      const wrapper = document.createElement("div");
+
+      if (role === "user") {
+        wrapper.className =
+          "message-wrapper user-wrapper";
+      } else {
+        wrapper.className =
+          "message-wrapper ai-wrapper";
+      }
+
+      const message = document.createElement("div");
+
+      message.className =
+        role === "user"
+          ? "message user"
+          : "message ai";
+
+      message.textContent = content;
+
+      wrapper.appendChild(message);
+      chat.appendChild(wrapper);
+
+      return message;
+    }
+
+    /* =========================
+       SEND MESSAGE
+    ========================= */
+
     async function sendMessage() {
       const message = input.value.trim();
 
@@ -285,15 +379,17 @@
 
       welcome.style.display = "none";
 
-      const userWrapper = document.createElement("div");
-      userWrapper.className = "message-wrapper user-wrapper";
+      /* Simpan pesan user */
+      addMessageToHistory(
+        "user",
+        message
+      );
 
-      const userMessage = document.createElement("div");
-      userMessage.className = "message user";
-      userMessage.textContent = message;
-
-      userWrapper.appendChild(userMessage);
-      chat.appendChild(userWrapper);
+      /* Tampilkan pesan user */
+      createMessageElement(
+        "user",
+        message
+      );
 
       input.value = "";
 
@@ -301,13 +397,18 @@
       input.disabled = true;
       button.textContent = "Menjawab...";
 
+      /* AI thinking */
       const aiWrapper = document.createElement("div");
-      aiWrapper.className = "message-wrapper ai-wrapper";
+      aiWrapper.className =
+        "message-wrapper ai-wrapper";
 
       const aiMessage = document.createElement("div");
-      aiMessage.className = "message ai";
+      aiMessage.className =
+        "message ai";
 
-      const thinking = document.createElement("div");
+      const thinking =
+        document.createElement("div");
+
       thinking.className = "thinking";
 
       thinking.innerHTML = `
@@ -326,9 +427,11 @@
       try {
         const response = await fetch("/api/chat", {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json"
           },
+
           body: JSON.stringify({
             message: message
           })
@@ -338,18 +441,43 @@
 
         if (!response.ok) {
           throw new Error(
-            data.error || "Terjadi kesalahan pada server."
+            data.error ||
+            "Terjadi kesalahan pada server."
           );
         }
 
-        aiMessage.textContent =
-          data.reply || "Nexora tidak memberikan jawaban.";
+        const reply =
+          data.reply ||
+          "Nexora tidak memberikan jawaban.";
+
+        /* Tampilkan jawaban AI */
+        aiMessage.textContent = reply;
+
+        /* Simpan jawaban AI */
+        addMessageToHistory(
+          "ai",
+          reply
+        );
 
       } catch (error) {
-        console.error("Nexora error:", error);
+        console.error(
+          "Nexora error:",
+          error
+        );
+
+        const errorMessage =
+          "Error Nexora: " +
+          error.message;
 
         aiMessage.textContent =
-          "Error Nexora: " + error.message;
+          errorMessage;
+
+        /* Simpan error juga supaya tampilan
+           setelah refresh tetap konsisten */
+        addMessageToHistory(
+          "ai",
+          errorMessage
+        );
       }
 
       button.disabled = false;
@@ -361,19 +489,43 @@
       chat.scrollTop = chat.scrollHeight;
     }
 
-    button.addEventListener("click", sendMessage);
+    /* =========================
+       EVENTS
+    ========================= */
 
-    input.addEventListener("keydown", function(event) {
-      if (event.key === "Enter") {
-        sendMessage();
+    button.addEventListener(
+      "click",
+      sendMessage
+    );
+
+    input.addEventListener(
+      "keydown",
+      function(event) {
+        if (event.key === "Enter") {
+          sendMessage();
+        }
       }
-    });
+    );
 
-    /* PWA */
+    /* =========================
+       LOAD HISTORY
+    ========================= */
+
+    loadChatHistory();
+
+    /* =========================
+       PWA
+    ========================= */
+
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/service-worker.js");
-      });
+      window.addEventListener(
+        "load",
+        () => {
+          navigator.serviceWorker.register(
+            "/service-worker.js"
+          );
+        }
+      );
     }
   </script>
 
