@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="id">
-<head>
+<!DOCTYPE html><html lang="id"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Nexora AI</title><meta
 name="description"
@@ -410,10 +409,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
     }
 
     /* =========================
-       HISTORY MENU BUTTON
+       DELETE BUTTON
     ========================= */
 
-    .history-menu-button {
+    .history-delete-button {
       width: 34px;
       height: 34px;
       flex-shrink: 0;
@@ -422,15 +421,13 @@ content="Nexora AI - Intelligent technology for a smarter future."
       color: #777777;
       border: 1px solid transparent;
       border-radius: 8px;
-      font-size: 19px;
-      font-weight: 700;
-      line-height: 1;
+      font-size: 17px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .history-menu-button:hover {
+    .history-delete-button:hover {
       background: #222222;
       color: #ffffff;
       border-color: #333333;
@@ -595,6 +592,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
     const historyList =
       document.getElementById("historyList");
 
+
     /* =========================
        MULTI CONVERSATION
     ========================= */
@@ -609,6 +607,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
     let activeChatId = null;
 
+
     /* =========================
        CREATE CONVERSATION
     ========================= */
@@ -617,15 +616,20 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       const conversation = {
 
-        id: Date.now().toString(),
+        id:
+          Date.now().toString(),
 
-        title: "Percakapan baru",
+        title:
+          "Percakapan baru",
 
-        messages: [],
+        messages:
+          [],
 
-        createdAt: Date.now(),
+        createdAt:
+          Date.now(),
 
-        updatedAt: Date.now()
+        updatedAt:
+          Date.now()
 
       };
 
@@ -641,7 +645,9 @@ content="Nexora AI - Intelligent technology for a smarter future."
       renderHistory();
 
       return conversation;
+
     }
+
 
     /* =========================
        GET ACTIVE CONVERSATION
@@ -656,6 +662,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
       );
 
     }
+
 
     /* =========================
        SAVE CONVERSATIONS
@@ -687,6 +694,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
       }
 
     }
+
 
     /* =========================
        LOAD CONVERSATIONS
@@ -737,6 +745,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       migrateOldHistory();
 
+
       if (
         conversations.length === 0
       ) {
@@ -745,8 +754,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       }
 
+
       const activeConversation =
         getActiveConversation();
+
 
       if (!activeConversation) {
 
@@ -762,11 +773,13 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       }
 
+
       renderActiveConversation();
 
       renderHistory();
 
     }
+
 
     /* =========================
        MIGRATE OLD HISTORY
@@ -793,10 +806,12 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
         }
 
+
         const messages =
           JSON.parse(
             oldHistory
           );
+
 
         if (
           !Array.isArray(messages) ||
@@ -807,18 +822,22 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
         }
 
+
         const firstUserMessage =
           messages.find(
             (item) =>
               item.role === "user"
           );
 
+
         const title =
           firstUserMessage &&
           firstUserMessage.content
-            ? firstUserMessage.content
-                .slice(0, 40)
+            ? generateConversationTitle(
+                firstUserMessage.content
+              )
             : "Percakapan sebelumnya";
+
 
         const migratedConversation = {
 
@@ -843,6 +862,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
         };
 
+
         conversations.push(
           migratedConversation
         );
@@ -851,6 +871,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
           migratedConversation.id;
 
         saveConversations();
+
 
         localStorage.removeItem(
           OLD_STORAGE_KEY
@@ -866,6 +887,54 @@ content="Nexora AI - Intelligent technology for a smarter future."
       }
 
     }
+
+
+    /* =========================
+       AUTO TITLE
+    ========================= */
+
+    function generateConversationTitle(
+      text
+    ) {
+
+      if (!text) {
+
+        return "Percakapan baru";
+
+      }
+
+
+      let title =
+        text
+          .replace(/\s+/g, " ")
+          .trim();
+
+
+      if (!title) {
+
+        return "Percakapan baru";
+
+      }
+
+
+      title =
+        title.charAt(0).toUpperCase() +
+        title.slice(1);
+
+
+      if (title.length > 40) {
+
+        title =
+          title.slice(0, 40).trim() +
+          "...";
+
+      }
+
+
+      return title;
+
+    }
+
 
     /* =========================
        CLEAR DISPLAY
@@ -886,6 +955,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
     }
 
+
     /* =========================
        RENDER ACTIVE CHAT
     ========================= */
@@ -896,6 +966,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       const conversation =
         getActiveConversation();
+
 
       if (
         !conversation ||
@@ -909,8 +980,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       }
 
+
       welcome.style.display =
         "none";
+
 
       conversation.messages.forEach(
         (item) => {
@@ -923,6 +996,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
         }
       );
 
+
       setTimeout(() => {
 
         chat.scrollTop =
@@ -932,6 +1006,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
     }
 
+
     /* =========================
        RENDER CHAT HISTORY
     ========================= */
@@ -939,6 +1014,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
     function renderHistory() {
 
       historyList.innerHTML = "";
+
 
       if (
         conversations.length === 0
@@ -963,12 +1039,14 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       }
 
+
       const sortedConversations =
         [...conversations].sort(
           (a, b) =>
             (b.updatedAt || b.createdAt || 0) -
             (a.updatedAt || a.createdAt || 0)
         );
+
 
       sortedConversations.forEach(
         (conversation) => {
@@ -981,6 +1059,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
           item.className =
             "history-item";
 
+
           if (
             conversation.id ===
             activeChatId
@@ -992,6 +1071,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
           }
 
+
           const content =
             document.createElement(
               "div"
@@ -999,6 +1079,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
           content.className =
             "history-item-content";
+
 
           const title =
             document.createElement(
@@ -1011,6 +1092,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
           title.textContent =
             conversation.title ||
             "Percakapan baru";
+
 
           const date =
             document.createElement(
@@ -1026,6 +1108,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
               conversation.createdAt
             );
 
+
           content.appendChild(
             title
           );
@@ -1034,52 +1117,56 @@ content="Nexora AI - Intelligent technology for a smarter future."
             date
           );
 
+
           /* =========================
-             MENU BUTTON
+             DELETE BUTTON
           ========================= */
 
-          const menuButton =
+          const deleteButton =
             document.createElement(
               "button"
             );
 
-          menuButton.className =
-            "history-menu-button";
+          deleteButton.className =
+            "history-delete-button";
 
-          menuButton.type =
+          deleteButton.type =
             "button";
 
-          menuButton.textContent =
-            "⋮";
+          deleteButton.textContent =
+            "🗑";
 
-          menuButton.title =
-            "Opsi percakapan";
+          deleteButton.title =
+            "Hapus percakapan";
 
-          menuButton.setAttribute(
+          deleteButton.setAttribute(
             "aria-label",
-            "Opsi percakapan"
+            "Hapus percakapan"
           );
 
-          menuButton.addEventListener(
+
+          deleteButton.addEventListener(
             "click",
             (event) => {
 
               event.stopPropagation();
 
-              showConversationMenu(
+              deleteConversation(
                 conversation
               );
 
             }
           );
 
+
           item.appendChild(
             content
           );
 
           item.appendChild(
-            menuButton
+            deleteButton
           );
+
 
           item.addEventListener(
             "click",
@@ -1092,6 +1179,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
             }
           );
 
+
           historyList.appendChild(
             item
           );
@@ -1101,108 +1189,6 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
     }
 
-    /* =========================
-       CONVERSATION MENU
-    ========================= */
-
-    function showConversationMenu(
-      conversation
-    ) {
-
-      const action =
-        prompt(
-          "Pilih aksi untuk percakapan:\n\n1 = Rename\n2 = Delete",
-          "1"
-        );
-
-      if (
-        action === null
-      ) {
-
-        return;
-
-      }
-
-      if (
-        action.trim() === "1"
-      ) {
-
-        renameConversation(
-          conversation
-        );
-
-        return;
-
-      }
-
-      if (
-        action.trim() === "2"
-      ) {
-
-        deleteConversation(
-          conversation
-        );
-
-        return;
-
-      }
-
-      alert(
-        "Pilihan tidak valid.\nGunakan 1 untuk Rename atau 2 untuk Delete."
-      );
-
-    }
-
-    /* =========================
-       RENAME CONVERSATION
-    ========================= */
-
-    function renameConversation(
-      conversation
-    ) {
-
-      const currentTitle =
-        conversation.title ||
-        "Percakapan baru";
-
-      const newTitle =
-        prompt(
-          "Ganti nama percakapan:",
-          currentTitle
-        );
-
-      if (
-        newTitle === null
-      ) {
-
-        return;
-
-      }
-
-      const trimmedTitle =
-        newTitle.trim();
-
-      if (!trimmedTitle) {
-
-        alert(
-          "Nama percakapan tidak boleh kosong."
-        );
-
-        return;
-
-      }
-
-      conversation.title =
-        trimmedTitle.slice(0, 80);
-
-      conversation.updatedAt =
-        Date.now();
-
-      saveConversations();
-
-      renderHistory();
-
-    }
 
     /* =========================
        DELETE CONVERSATION
@@ -1215,10 +1201,13 @@ content="Nexora AI - Intelligent technology for a smarter future."
       const confirmed =
         confirm(
           'Hapus percakapan "' +
-          (conversation.title ||
-            "Percakapan baru") +
+          (
+            conversation.title ||
+            "Percakapan baru"
+          ) +
           '"?\n\nPercakapan yang dihapus tidak dapat dikembalikan.'
         );
+
 
       if (!confirmed) {
 
@@ -1226,8 +1215,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       }
 
+
       const deletedId =
         conversation.id;
+
 
       conversations =
         conversations.filter(
@@ -1235,7 +1226,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
             item.id !== deletedId
         );
 
-      /* Jika yang dihapus adalah chat aktif */
+
+      /* =========================
+         JIKA CHAT AKTIF DIHAPUS
+      ========================= */
 
       if (
         activeChatId === deletedId
@@ -1252,6 +1246,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
                 (a.updatedAt || a.createdAt || 0)
             )[0];
 
+
           activeChatId =
             nextConversation.id;
 
@@ -1264,17 +1259,18 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
         }
 
-        saveConversations();
 
         renderActiveConversation();
 
       }
+
 
       saveConversations();
 
       renderHistory();
 
     }
+
 
     /* =========================
        FORMAT DATE
@@ -1288,15 +1284,18 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       }
 
+
       const date =
         new Date(timestamp);
 
       const now =
         new Date();
 
+
       const isToday =
         date.toDateString() ===
         now.toDateString();
+
 
       if (isToday) {
 
@@ -1313,12 +1312,14 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       }
 
+
       const yesterday =
         new Date();
 
       yesterday.setDate(
         yesterday.getDate() - 1
       );
+
 
       if (
         date.toDateString() ===
@@ -1328,6 +1329,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
         return "Kemarin";
 
       }
+
 
       return date.toLocaleDateString(
         "id-ID",
@@ -1339,6 +1341,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
       );
 
     }
+
 
     /* =========================
        OPEN CONVERSATION
@@ -1355,14 +1358,17 @@ content="Nexora AI - Intelligent technology for a smarter future."
             conversationId
         );
 
+
       if (!conversation) {
 
         return;
 
       }
 
+
       activeChatId =
         conversation.id;
+
 
       saveConversations();
 
@@ -1375,6 +1381,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
       input.focus();
 
     }
+
 
     /* =========================
        HISTORY PANEL
@@ -1394,6 +1401,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
     }
 
+
     function closeHistory() {
 
       historyPanel.classList.remove(
@@ -1406,8 +1414,9 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
     }
 
+
     /* =========================
-       ADD MESSAGE
+       ADD MESSAGE TO HISTORY
     ========================= */
 
     function addMessageToHistory(
@@ -1418,11 +1427,13 @@ content="Nexora AI - Intelligent technology for a smarter future."
       const conversation =
         getActiveConversation();
 
+
       if (!conversation) {
 
         return;
 
       }
+
 
       conversation.messages.push({
 
@@ -1437,25 +1448,38 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       });
 
+
+      /* =========================
+         AUTO RENAME
+      ========================= */
+
       if (
         role === "user" &&
-        conversation.title ===
-          "Percakapan baru"
+        (
+          !conversation.title ||
+          conversation.title ===
+            "Percakapan baru"
+        )
       ) {
 
         conversation.title =
-          content.slice(0, 40);
+          generateConversationTitle(
+            content
+          );
 
       }
 
+
       conversation.updatedAt =
         Date.now();
+
 
       saveConversations();
 
       renderHistory();
 
     }
+
 
     /* =========================
        CREATE MESSAGE ELEMENT
@@ -1471,6 +1495,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
           "div"
         );
 
+
       if (role === "user") {
 
         wrapper.className =
@@ -1483,30 +1508,37 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       }
 
+
       const message =
         document.createElement(
           "div"
         );
+
 
       message.className =
         role === "user"
           ? "message user"
           : "message ai";
 
+
       message.textContent =
         content;
+
 
       wrapper.appendChild(
         message
       );
 
+
       chat.appendChild(
         wrapper
       );
 
+
       return message;
 
     }
+
 
     /* =========================
        NEW CHAT
@@ -1520,12 +1552,15 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       }
 
+
       const currentConversation =
         getActiveConversation();
+
 
       const hasMessages =
         currentConversation &&
         currentConversation.messages.length > 0;
+
 
       if (hasMessages) {
 
@@ -1534,6 +1569,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
             "Mulai chat baru?\n\nPercakapan saat ini tetap tersimpan di browser."
           );
 
+
         if (!confirmed) {
 
           return;
@@ -1541,6 +1577,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
         }
 
       }
+
 
       createConversation();
 
@@ -1563,6 +1600,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
     }
 
+
     /* =========================
        SEND MESSAGE
     ========================= */
@@ -1571,6 +1609,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       const message =
         input.value.trim();
+
 
       if (
         !message ||
@@ -1581,8 +1620,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       }
 
+
       const conversation =
         getActiveConversation();
+
 
       if (!conversation) {
 
@@ -1590,22 +1631,30 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       }
 
+
       welcome.style.display =
         "none";
 
-      /* Simpan pesan user */
+
+      /* =========================
+         SIMPAN PESAN USER
+      ========================= */
 
       addMessageToHistory(
         "user",
         message
       );
 
-      /* Tampilkan pesan user */
+
+      /* =========================
+         TAMPILKAN PESAN USER
+      ========================= */
 
       createMessageElement(
         "user",
         message
       );
+
 
       input.value = "";
 
@@ -1619,7 +1668,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
       button.textContent =
         "Menjawab...";
 
-      /* AI THINKING */
+
+      /* =========================
+         AI THINKING
+      ========================= */
 
       const aiWrapper =
         document.createElement(
@@ -1629,6 +1681,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
       aiWrapper.className =
         "message-wrapper ai-wrapper";
 
+
       const aiMessage =
         document.createElement(
           "div"
@@ -1636,6 +1689,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
       aiMessage.className =
         "message ai";
+
 
       const thinking =
         document.createElement(
@@ -1645,12 +1699,14 @@ content="Nexora AI - Intelligent technology for a smarter future."
       thinking.className =
         "thinking";
 
+
       thinking.innerHTML = `
         <span>Nexora sedang berpikir</span>
         <span class="dot"></span>
         <span class="dot"></span>
         <span class="dot"></span>
       `;
+
 
       aiMessage.appendChild(
         thinking
@@ -1664,8 +1720,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
         aiWrapper
       );
 
+
       chat.scrollTop =
         chat.scrollHeight;
+
 
       try {
 
@@ -1687,8 +1745,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
             }
           );
 
+
         const data =
           await response.json();
+
 
         if (!response.ok) {
 
@@ -1699,16 +1759,23 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
         }
 
+
         const reply =
           data.reply ||
           "Nexora tidak memberikan jawaban.";
 
-        /* Tampilkan jawaban AI */
+
+        /* =========================
+           TAMPILKAN JAWABAN AI
+        ========================= */
 
         aiMessage.textContent =
           reply;
 
-        /* Simpan jawaban AI */
+
+        /* =========================
+           SIMPAN JAWABAN AI
+        ========================= */
 
         addMessageToHistory(
           "ai",
@@ -1722,14 +1789,15 @@ content="Nexora AI - Intelligent technology for a smarter future."
           error
         );
 
+
         const errorMessage =
           "Error Nexora: " +
           error.message;
 
+
         aiMessage.textContent =
           errorMessage;
 
-        /* Simpan error */
 
         addMessageToHistory(
           "ai",
@@ -1737,6 +1805,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
         );
 
       }
+
 
       button.disabled = false;
 
@@ -1755,6 +1824,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
     }
 
+
     /* =========================
        EVENTS
     ========================= */
@@ -1764,25 +1834,30 @@ content="Nexora AI - Intelligent technology for a smarter future."
       sendMessage
     );
 
+
     newChatButton.addEventListener(
       "click",
       startNewChat
     );
+
 
     historyButton.addEventListener(
       "click",
       openHistory
     );
 
+
     closeHistoryButton.addEventListener(
       "click",
       closeHistory
     );
 
+
     historyOverlay.addEventListener(
       "click",
       closeHistory
     );
+
 
     input.addEventListener(
       "keydown",
@@ -1799,11 +1874,13 @@ content="Nexora AI - Intelligent technology for a smarter future."
       }
     );
 
+
     /* =========================
        LOAD
     ========================= */
 
     loadConversations();
+
 
     /* =========================
        PWA
