@@ -1,20 +1,14 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Nexora AI</title><meta
+name="description"
+content="Nexora AI - Intelligent technology for a smarter future."
 
-  <title>Nexora AI</title>
-
-  <meta
-    name="description"
-    content="Nexora AI - Intelligent technology for a smarter future."
-  >
+«»
 
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#050505">
-
-  <style>
+  <meta name="theme-color" content="#050505">  <style>
     * {
       margin: 0;
       padding: 0;
@@ -34,6 +28,10 @@
       overflow: hidden;
     }
 
+    /* =========================
+       HEADER
+    ========================= */
+
     header {
       height: 64px;
       display: flex;
@@ -42,6 +40,7 @@
       position: relative;
       border-bottom: 1px solid #1f1f1f;
       background: rgba(5, 5, 5, 0.95);
+      z-index: 20;
     }
 
     .logo {
@@ -49,6 +48,31 @@
       font-weight: 700;
       letter-spacing: 1px;
     }
+
+    .history-button {
+      position: absolute;
+      left: 14px;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      background: #111111;
+      color: #ffffff;
+      border: 1px solid #292929;
+      border-radius: 11px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .history-button:hover {
+      background: #181818;
+      opacity: 1;
+    }
+
+    /* =========================
+       CHAT
+    ========================= */
 
     .chat {
       height: calc(100vh - 64px);
@@ -173,6 +197,7 @@
       border: 1px solid #252525;
       border-radius: 16px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      z-index: 15;
     }
 
     input {
@@ -247,10 +272,129 @@
       transform: scale(0.95);
     }
 
-    .new-chat-button:disabled {
-      opacity: 0.5;
-      cursor: wait;
+    /* =========================
+       HISTORY PANEL
+    ========================= */
+
+    .history-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.2s ease;
+      z-index: 30;
+    }
+
+    .history-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .history-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: min(86%, 340px);
+      height: 100vh;
+      background: #0a0a0a;
+      border-right: 1px solid #242424;
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 31;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .history-panel.show {
+      transform: translateX(0);
+    }
+
+    .history-header {
+      height: 64px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid #202020;
+    }
+
+    .history-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .close-history {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      background: #111111;
+      color: #ffffff;
+      border: 1px solid #292929;
+      border-radius: 10px;
+      font-size: 20px;
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .history-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .history-list::-webkit-scrollbar-thumb {
+      background: #292929;
+      border-radius: 10px;
+    }
+
+    .history-empty {
+      color: #666666;
+      text-align: center;
+      padding: 30px 15px;
+      font-size: 14px;
+    }
+
+    .history-item {
+      width: 100%;
+      display: block;
+      text-align: left;
+      padding: 13px 14px;
+      margin-bottom: 7px;
+      background: transparent;
+      color: #dddddd;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      cursor: pointer;
+    }
+
+    .history-item:hover {
+      background: #111111;
+      border-color: #202020;
       transform: none;
+      opacity: 1;
+    }
+
+    .history-item.active {
+      background: #151515;
+      border-color: #2b2b2b;
+    }
+
+    .history-item-title {
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-item-date {
+      margin-top: 5px;
+      color: #666666;
+      font-size: 11px;
     }
 
     /* =========================
@@ -258,6 +402,7 @@
     ========================= */
 
     @media (max-width: 600px) {
+
       .chat {
         padding: 20px 12px 110px;
       }
@@ -289,54 +434,95 @@
         height: 38px;
         font-size: 23px;
       }
+
+      .history-panel {
+        width: 88%;
+      }
     }
-  </style>
-</head>
+  </style></head><body>  <!-- =========================
+       HISTORY PANEL
+  ========================= -->  <div
+    id="historyOverlay"
+    class="history-overlay"
+  ></div>  <aside
+    id="historyPanel"
+    class="history-panel"
+  ><div class="history-header">
 
-<body>
-
-  <header>
-    <div class="logo">NEXORA AI</div>
-  </header>
-
-  <main id="chat" class="chat">
-
-    <div id="welcome" class="welcome">
-      <h1>Halo, saya Nexora AI.</h1>
-      <p>Apa yang ingin kamu lakukan hari ini?</p>
-    </div>
-
-  </main>
-
-  <!-- =========================
-       INPUT AREA
-  ========================= -->
-
-  <div class="input-area">
-
-    <button
-      id="newChatButton"
-      class="new-chat-button"
-      aria-label="Chat baru"
-      title="Chat baru"
-    >
-      +
-    </button>
-
-    <input
-      id="messageInput"
-      type="text"
-      placeholder="Tanyakan sesuatu kepada Nexora AI..."
-      autocomplete="off"
-    >
-
-    <button id="sendButton">
-      Kirim
-    </button>
-
+  <div class="history-title">
+    Chat History
   </div>
 
-  <script>
+  <button
+    id="closeHistoryButton"
+    class="close-history"
+    aria-label="Tutup"
+  >
+    ×
+  </button>
+
+</div>
+
+<div
+  id="historyList"
+  class="history-list"
+></div>
+
+  </aside>  <!-- =========================
+       HEADER
+  ========================= -->  <header><button
+  id="historyButton"
+  class="history-button"
+  aria-label="Chat History"
+  title="Chat History"
+>
+  ☰
+</button>
+
+<div class="logo">
+  NEXORA AI
+</div>
+
+  </header>  <!-- =========================
+       CHAT
+  ========================= -->  <main
+    id="chat"
+    class="chat"
+  ><div
+  id="welcome"
+  class="welcome"
+>
+  <h1>Halo, saya Nexora AI.</h1>
+
+  <p>
+    Apa yang ingin kamu lakukan hari ini?
+  </p>
+</div>
+
+  </main>  <!-- =========================
+       INPUT AREA
+  ========================= -->  <div class="input-area"><button
+  id="newChatButton"
+  class="new-chat-button"
+  aria-label="Chat baru"
+  title="Chat baru"
+>
+  +
+</button>
+
+<input
+  id="messageInput"
+  type="text"
+  placeholder="Tanyakan sesuatu kepada Nexora AI..."
+  autocomplete="off"
+>
+
+<button id="sendButton">
+  Kirim
+</button>
+
+  </div>  <script>
+
     const input =
       document.getElementById("messageInput");
 
@@ -351,6 +537,21 @@
 
     const welcome =
       document.getElementById("welcome");
+
+    const historyButton =
+      document.getElementById("historyButton");
+
+    const historyPanel =
+      document.getElementById("historyPanel");
+
+    const historyOverlay =
+      document.getElementById("historyOverlay");
+
+    const closeHistoryButton =
+      document.getElementById("closeHistoryButton");
+
+    const historyList =
+      document.getElementById("historyList");
 
     /* =========================
        MULTI CONVERSATION
@@ -395,6 +596,8 @@
 
       saveConversations();
 
+      renderHistory();
+
       return conversation;
     }
 
@@ -409,6 +612,7 @@
           conversation.id ===
           activeChatId
       );
+
     }
 
     /* =========================
@@ -517,6 +721,8 @@
       }
 
       renderActiveConversation();
+
+      renderHistory();
 
     }
 
@@ -685,6 +891,250 @@
     }
 
     /* =========================
+       RENDER CHAT HISTORY
+    ========================= */
+
+    function renderHistory() {
+
+      historyList.innerHTML = "";
+
+      if (
+        conversations.length === 0
+      ) {
+
+        const empty =
+          document.createElement(
+            "div"
+          );
+
+        empty.className =
+          "history-empty";
+
+        empty.textContent =
+          "Belum ada percakapan.";
+
+        historyList.appendChild(
+          empty
+        );
+
+        return;
+
+      }
+
+      const sortedConversations =
+        [...conversations].sort(
+          (a, b) =>
+            (b.updatedAt || b.createdAt || 0) -
+            (a.updatedAt || a.createdAt || 0)
+        );
+
+      sortedConversations.forEach(
+        (conversation) => {
+
+          const item =
+            document.createElement(
+              "button"
+            );
+
+          item.className =
+            "history-item";
+
+          if (
+            conversation.id ===
+            activeChatId
+          ) {
+
+            item.classList.add(
+              "active"
+            );
+
+          }
+
+          const title =
+            document.createElement(
+              "div"
+            );
+
+          title.className =
+            "history-item-title";
+
+          title.textContent =
+            conversation.title ||
+            "Percakapan baru";
+
+          const date =
+            document.createElement(
+              "div"
+            );
+
+          date.className =
+            "history-item-date";
+
+          date.textContent =
+            formatDate(
+              conversation.updatedAt ||
+              conversation.createdAt
+            );
+
+          item.appendChild(
+            title
+          );
+
+          item.appendChild(
+            date
+          );
+
+          item.addEventListener(
+            "click",
+            () => {
+
+              openConversation(
+                conversation.id
+              );
+
+            }
+          );
+
+          historyList.appendChild(
+            item
+          );
+
+        }
+      );
+
+    }
+
+    /* =========================
+       FORMAT DATE
+    ========================= */
+
+    function formatDate(timestamp) {
+
+      if (!timestamp) {
+
+        return "";
+
+      }
+
+      const date =
+        new Date(timestamp);
+
+      const now =
+        new Date();
+
+      const isToday =
+        date.toDateString() ===
+        now.toDateString();
+
+      if (isToday) {
+
+        return (
+          "Hari ini • " +
+          date.toLocaleTimeString(
+            "id-ID",
+            {
+              hour: "2-digit",
+              minute: "2-digit"
+            }
+          )
+        );
+
+      }
+
+      const yesterday =
+        new Date();
+
+      yesterday.setDate(
+        yesterday.getDate() - 1
+      );
+
+      if (
+        date.toDateString() ===
+        yesterday.toDateString()
+      ) {
+
+        return "Kemarin";
+
+      }
+
+      return date.toLocaleDateString(
+        "id-ID",
+        {
+          day: "numeric",
+          month: "short",
+          year: "numeric"
+        }
+      );
+
+    }
+
+    /* =========================
+       OPEN CONVERSATION
+    ========================= */
+
+    function openConversation(
+      conversationId
+    ) {
+
+      const conversation =
+        conversations.find(
+          (item) =>
+            item.id ===
+            conversationId
+        );
+
+      if (!conversation) {
+
+        return;
+
+      }
+
+      activeChatId =
+        conversation.id;
+
+      saveConversations();
+
+      renderActiveConversation();
+
+      renderHistory();
+
+      closeHistory();
+
+      input.focus();
+
+    }
+
+    /* =========================
+       HISTORY PANEL
+    ========================= */
+
+    function openHistory() {
+
+      historyPanel.classList.add(
+        "show"
+      );
+
+      historyOverlay.classList.add(
+        "show"
+      );
+
+      renderHistory();
+
+    }
+
+    function closeHistory() {
+
+      historyPanel.classList.remove(
+        "show"
+      );
+
+      historyOverlay.classList.remove(
+        "show"
+      );
+
+    }
+
+    /* =========================
        ADD MESSAGE
     ========================= */
 
@@ -730,6 +1180,8 @@
         Date.now();
 
       saveConversations();
+
+      renderHistory();
 
     }
 
@@ -1045,6 +1497,21 @@
       startNewChat
     );
 
+    historyButton.addEventListener(
+      "click",
+      openHistory
+    );
+
+    closeHistoryButton.addEventListener(
+      "click",
+      closeHistory
+    );
+
+    historyOverlay.addEventListener(
+      "click",
+      closeHistory
+    );
+
     input.addEventListener(
       "keydown",
       function(event) {
@@ -1086,7 +1553,6 @@
       );
 
     }
-  </script>
 
-</body>
+  </script></body>
 </html>
