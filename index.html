@@ -1,19 +1,29 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Nexora AI</title><meta
-name="description"
-content="Nexora AI - Intelligent technology for a smarter future."
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-«»
+  <title>Nexora AI</title>
 
-  <link rel="manifest" href="/manifest.json">  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <meta
+    name="description"
+    content="Nexora AI - Intelligent technology for a smarter future."
+  >
+
+  <link rel="manifest" href="/manifest.json">
+
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
-  <link rel="apple-touch-icon" href="/icon-192.png">  <meta name="theme-color" content="#050505">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+
+  <meta name="theme-color" content="#050505">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Nexora AI">  <style>
+  <meta name="apple-mobile-web-app-title" content="Nexora AI">
+
+  <style>
     * {
       margin: 0;
       padding: 0;
@@ -27,7 +37,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
       min-height: 100vh;
     }
 
-    /* SPLASH SCREEN */
+    /* =========================
+       SPLASH SCREEN
+       ========================= */
+
     #splash {
       position: fixed;
       inset: 0;
@@ -37,12 +50,22 @@ content="Nexora AI - Intelligent technology for a smarter future."
       align-items: center;
       z-index: 9999;
       animation: splashFade 0.7s ease forwards;
-      animation-delay: 1.3s;
+      animation-delay: 1.8s;
     }
 
     .splash-content {
       text-align: center;
-      animation: logoEnter 0.9s ease;
+      animation: splashEnter 0.9s ease;
+    }
+
+    .splash-icon {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 24px;
+      border-radius: 26px;
+      animation: iconEnter 0.9s ease;
     }
 
     .splash-logo {
@@ -55,24 +78,43 @@ content="Nexora AI - Intelligent technology for a smarter future."
       color: #777;
     }
 
+    .splash-tagline {
+      color: #777;
+      font-size: 12px;
+      margin-top: 10px;
+      letter-spacing: 0.3px;
+    }
+
     .splash-line {
       width: 45px;
       height: 2px;
       background: #777;
-      margin: 18px auto 0;
+      margin: 20px auto 0;
       border-radius: 10px;
       animation: linePulse 1.2s ease-in-out infinite;
     }
 
-    @keyframes logoEnter {
+    @keyframes splashEnter {
       from {
         opacity: 0;
-        transform: translateY(12px) scale(0.97);
+        transform: translateY(15px);
       }
 
       to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes iconEnter {
+      from {
+        opacity: 0;
+        transform: scale(0.82);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
       }
     }
 
@@ -95,6 +137,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
         pointer-events: none;
       }
     }
+
+    /* =========================
+       HEADER
+       ========================= */
 
     header {
       width: 100%;
@@ -124,6 +170,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
     nav a:hover {
       color: white;
     }
+
+    /* =========================
+       MAIN
+       ========================= */
 
     main {
       min-height: 80vh;
@@ -169,6 +219,10 @@ content="Nexora AI - Intelligent technology for a smarter future."
       margin: auto;
     }
 
+    /* =========================
+       BUTTONS
+       ========================= */
+
     .buttons {
       margin-top: 35px;
     }
@@ -192,60 +246,160 @@ content="Nexora AI - Intelligent technology for a smarter future."
       color: white;
     }
 
+    /* =========================
+       FOOTER
+       ========================= */
+
     footer {
       text-align: center;
       padding: 25px;
       color: #555;
       font-size: 13px;
     }
-  </style></head><body>  <!-- SPLASH SCREEN -->  <div id="splash">
+
+    /* =========================
+       MOBILE
+       ========================= */
+
+    @media (max-width: 600px) {
+      .splash-icon {
+        width: 105px;
+        height: 105px;
+      }
+
+      .splash-logo {
+        font-size: 30px;
+        letter-spacing: 3px;
+      }
+
+      .splash-tagline {
+        font-size: 11px;
+      }
+
+      nav {
+        display: none;
+      }
+
+      header {
+        padding: 22px 6%;
+      }
+
+      .description {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       SPLASH SCREEN
+       ========================= -->
+
+  <div id="splash">
+
     <div class="splash-content">
+
+      <img
+        src="/icon-512.png"
+        alt="Nexora AI"
+        class="splash-icon"
+      >
+
       <div class="splash-logo">
         NEXORA<span> AI</span>
-      </div>  <div class="splash-line"></div>
-</div>
+      </div>
 
-  </div>  <header>
-    <div class="logo">NEXORA<span> AI</span></div><nav>
-  <a href="#">Home</a>
-  <a href="#">About</a>
-</nav>
+      <div class="splash-tagline">
+        Intelligence for a smarter future.
+      </div>
 
-  </header>  <main>
-    <section class="hero">  <div class="badge">
-    Next Generation Intelligence
+      <div class="splash-line"></div>
+
+    </div>
+
   </div>
 
-  <h1>
-    Intelligence for a
-    <span class="gradient">smarter future.</span>
-  </h1>
 
-  <p class="description">
-    Nexora AI adalah platform teknologi kecerdasan buatan
-    yang dirancang untuk membantu manusia bekerja,
-    berpikir, dan berkembang lebih cerdas.
-  </p>
+  <!-- =========================
+       HEADER
+       ========================= -->
 
-  <div class="buttons">
-    <a href="chat.html" class="btn primary">
-      Mulai Nexora AI
-    </a>
+  <header>
 
-    <a href="#" class="btn secondary">
-      Pelajari Nexora
-    </a>
-  </div>
+    <div class="logo">
+      NEXORA<span> AI</span>
+    </div>
 
-</section>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+    </nav>
 
-  </main>  <footer>
+  </header>
+
+
+  <!-- =========================
+       MAIN
+       ========================= -->
+
+  <main>
+
+    <section class="hero">
+
+      <div class="badge">
+        Next Generation Intelligence
+      </div>
+
+      <h1>
+        Intelligence for a
+        <span class="gradient">smarter future.</span>
+      </h1>
+
+      <p class="description">
+        Nexora AI adalah platform teknologi kecerdasan buatan
+        yang dirancang untuk membantu manusia bekerja,
+        berpikir, dan berkembang lebih cerdas.
+      </p>
+
+      <div class="buttons">
+
+        <a href="chat.html" class="btn primary">
+          Mulai Nexora AI
+        </a>
+
+        <a href="#" class="btn secondary">
+          Pelajari Nexora
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+       ========================= -->
+
+  <footer>
     © 2026 Nexora AI. All rights reserved.
-  </footer>  <script>
+  </footer>
+
+
+  <!-- =========================
+       SERVICE WORKER
+       ========================= -->
+
+  <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("/service-worker.js");
       });
     }
-  </script></body>
+  </script>
+
+</body>
 </html>
