@@ -50,36 +50,6 @@
       letter-spacing: 1px;
     }
 
-    .new-chat-button {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      background: #111111;
-      color: #ffffff;
-      border: 1px solid #292929;
-      border-radius: 12px;
-      font-size: 25px;
-      font-weight: 400;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .new-chat-button:hover {
-      background: #181818;
-      opacity: 1;
-      transform: translateY(-50%);
-    }
-
-    .new-chat-button:active {
-      transform: translateY(-50%) scale(0.95);
-    }
-
     .chat {
       height: calc(100vh - 64px);
       overflow-y: auto;
@@ -185,6 +155,10 @@
       }
     }
 
+    /* =========================
+       INPUT AREA
+    ========================= */
+
     .input-area {
       position: fixed;
       left: 50%;
@@ -192,6 +166,7 @@
       transform: translateX(-50%);
       width: min(92%, 760px);
       display: flex;
+      align-items: center;
       gap: 10px;
       padding: 8px;
       background: #0d0d0d;
@@ -241,11 +216,46 @@
       transform: none;
     }
 
+    /* =========================
+       NEW CHAT BUTTON
+    ========================= */
+
+    .new-chat-button {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      padding: 0;
+      background: #111111;
+      color: #ffffff;
+      border: 1px solid #292929;
+      border-radius: 12px;
+      font-size: 25px;
+      font-weight: 400;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .new-chat-button:hover {
+      background: #181818;
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+
+    .new-chat-button:active {
+      transform: scale(0.95);
+    }
+
     .new-chat-button:disabled {
       opacity: 0.5;
       cursor: wait;
-      transform: translateY(-50%);
+      transform: none;
     }
+
+    /* =========================
+       MOBILE
+    ========================= */
 
     @media (max-width: 600px) {
       .chat {
@@ -270,14 +280,14 @@
         width: 94%;
       }
 
-      button {
+      .input-area button#sendButton {
         padding: 12px 15px;
       }
 
       .new-chat-button {
-        left: 8px;
         width: 38px;
         height: 38px;
+        font-size: 23px;
       }
     }
   </style>
@@ -286,18 +296,7 @@
 <body>
 
   <header>
-
-    <button
-      id="newChatButton"
-      class="new-chat-button"
-      aria-label="Chat baru"
-      title="Chat baru"
-    >
-      +
-    </button>
-
     <div class="logo">NEXORA AI</div>
-
   </header>
 
   <main id="chat" class="chat">
@@ -309,7 +308,20 @@
 
   </main>
 
+  <!-- =========================
+       INPUT AREA
+  ========================= -->
+
   <div class="input-area">
+
+    <button
+      id="newChatButton"
+      class="new-chat-button"
+      aria-label="Chat baru"
+      title="Chat baru"
+    >
+      +
+    </button>
 
     <input
       id="messageInput"
@@ -325,20 +337,33 @@
   </div>
 
   <script>
-    const input = document.getElementById("messageInput");
-    const button = document.getElementById("sendButton");
-    const newChatButton = document.getElementById("newChatButton");
-    const chat = document.getElementById("chat");
-    const welcome = document.getElementById("welcome");
+    const input =
+      document.getElementById("messageInput");
+
+    const button =
+      document.getElementById("sendButton");
+
+    const newChatButton =
+      document.getElementById("newChatButton");
+
+    const chat =
+      document.getElementById("chat");
+
+    const welcome =
+      document.getElementById("welcome");
 
     /* =========================
        MULTI CONVERSATION
     ========================= */
 
-    const CHATS_KEY = "nexora_ai_chats";
-    const ACTIVE_CHAT_KEY = "nexora_ai_active_chat";
+    const CHATS_KEY =
+      "nexora_ai_chats";
+
+    const ACTIVE_CHAT_KEY =
+      "nexora_ai_active_chat";
 
     let conversations = [];
+
     let activeChatId = null;
 
     /* =========================
@@ -346,17 +371,27 @@
     ========================= */
 
     function createConversation() {
+
       const conversation = {
+
         id: Date.now().toString(),
+
         title: "Percakapan baru",
+
         messages: [],
+
         createdAt: Date.now(),
+
         updatedAt: Date.now()
+
       };
 
-      conversations.push(conversation);
+      conversations.push(
+        conversation
+      );
 
-      activeChatId = conversation.id;
+      activeChatId =
+        conversation.id;
 
       saveConversations();
 
@@ -368,9 +403,11 @@
     ========================= */
 
     function getActiveConversation() {
+
       return conversations.find(
         (conversation) =>
-          conversation.id === activeChatId
+          conversation.id ===
+          activeChatId
       );
     }
 
@@ -379,22 +416,30 @@
     ========================= */
 
     function saveConversations() {
+
       try {
+
         localStorage.setItem(
           CHATS_KEY,
-          JSON.stringify(conversations)
+          JSON.stringify(
+            conversations
+          )
         );
 
         localStorage.setItem(
           ACTIVE_CHAT_KEY,
           activeChatId || ""
         );
+
       } catch (error) {
+
         console.error(
           "Gagal menyimpan percakapan:",
           error
         );
+
       }
+
     }
 
     /* =========================
@@ -402,59 +447,63 @@
     ========================= */
 
     function loadConversations() {
+
       try {
+
         const savedChats =
-          localStorage.getItem(CHATS_KEY);
+          localStorage.getItem(
+            CHATS_KEY
+          );
 
         const savedActiveChat =
-          localStorage.getItem(ACTIVE_CHAT_KEY);
+          localStorage.getItem(
+            ACTIVE_CHAT_KEY
+          );
 
         if (savedChats) {
+
           conversations =
-            JSON.parse(savedChats);
+            JSON.parse(
+              savedChats
+            );
+
         }
 
         if (savedActiveChat) {
+
           activeChatId =
             savedActiveChat;
+
         }
 
       } catch (error) {
+
         console.error(
           "Gagal membaca percakapan:",
           error
         );
 
         conversations = [];
-        activeChatId = null;
-      }
 
-      /*
-        MIGRASI RIWAYAT LAMA
-        Supaya chat yang sudah tersimpan
-        sebelum fitur New Chat tidak hilang.
-      */
+        activeChatId = null;
+
+      }
 
       migrateOldHistory();
 
-      /*
-        Kalau belum ada percakapan,
-        buat percakapan pertama.
-      */
+      if (
+        conversations.length === 0
+      ) {
 
-      if (conversations.length === 0) {
         createConversation();
-      }
 
-      /*
-        Kalau activeChatId sudah tidak ditemukan,
-        gunakan percakapan terakhir.
-      */
+      }
 
       const activeConversation =
         getActiveConversation();
 
       if (!activeConversation) {
+
         const lastConversation =
           conversations[
             conversations.length - 1
@@ -464,9 +513,11 @@
           lastConversation.id;
 
         saveConversations();
+
       }
 
       renderActiveConversation();
+
     }
 
     /* =========================
@@ -474,10 +525,12 @@
     ========================= */
 
     function migrateOldHistory() {
+
       const OLD_STORAGE_KEY =
         "nexora_ai_chat_history";
 
       try {
+
         const oldHistory =
           localStorage.getItem(
             OLD_STORAGE_KEY
@@ -487,17 +540,23 @@
           !oldHistory ||
           conversations.length > 0
         ) {
+
           return;
+
         }
 
         const messages =
-          JSON.parse(oldHistory);
+          JSON.parse(
+            oldHistory
+          );
 
         if (
           !Array.isArray(messages) ||
           messages.length === 0
         ) {
+
           return;
+
         }
 
         const firstUserMessage =
@@ -514,17 +573,26 @@
             : "Percakapan sebelumnya";
 
         const migratedConversation = {
-          id: Date.now().toString(),
-          title: title,
-          messages: messages,
+
+          id:
+            Date.now().toString(),
+
+          title:
+            title,
+
+          messages:
+            messages,
+
           createdAt:
             messages[0].timestamp ||
             Date.now(),
+
           updatedAt:
             messages[
               messages.length - 1
             ].timestamp ||
             Date.now()
+
         };
 
         conversations.push(
@@ -536,21 +604,19 @@
 
         saveConversations();
 
-        /*
-          Hapus storage lama hanya setelah
-          data berhasil dipindahkan.
-        */
-
         localStorage.removeItem(
           OLD_STORAGE_KEY
         );
 
       } catch (error) {
+
         console.error(
           "Gagal migrasi riwayat lama:",
           error
         );
+
       }
+
     }
 
     /* =========================
@@ -558,14 +624,18 @@
     ========================= */
 
     function clearChatDisplay() {
+
       const messages =
         chat.querySelectorAll(
           ".message-wrapper"
         );
 
-      messages.forEach((message) => {
-        message.remove();
-      });
+      messages.forEach(
+        (message) => {
+          message.remove();
+        }
+      );
+
     }
 
     /* =========================
@@ -573,6 +643,7 @@
     ========================= */
 
     function renderActiveConversation() {
+
       clearChatDisplay();
 
       const conversation =
@@ -582,25 +653,35 @@
         !conversation ||
         conversation.messages.length === 0
       ) {
-        welcome.style.display = "block";
+
+        welcome.style.display =
+          "block";
+
         return;
+
       }
 
-      welcome.style.display = "none";
+      welcome.style.display =
+        "none";
 
       conversation.messages.forEach(
         (item) => {
+
           createMessageElement(
             item.role,
             item.content
           );
+
         }
       );
 
       setTimeout(() => {
+
         chat.scrollTop =
           chat.scrollHeight;
+
       }, 50);
+
     }
 
     /* =========================
@@ -611,36 +692,45 @@
       role,
       content
     ) {
+
       const conversation =
         getActiveConversation();
 
       if (!conversation) {
+
         return;
+
       }
 
       conversation.messages.push({
-        role: role,
-        content: content,
-        timestamp: Date.now()
-      });
 
-      /*
-        Judul otomatis dari pesan pertama user.
-      */
+        role:
+          role,
+
+        content:
+          content,
+
+        timestamp:
+          Date.now()
+
+      });
 
       if (
         role === "user" &&
         conversation.title ===
           "Percakapan baru"
       ) {
+
         conversation.title =
           content.slice(0, 40);
+
       }
 
       conversation.updatedAt =
         Date.now();
 
       saveConversations();
+
     }
 
     /* =========================
@@ -651,19 +741,28 @@
       role,
       content
     ) {
+
       const wrapper =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       if (role === "user") {
+
         wrapper.className =
           "message-wrapper user-wrapper";
+
       } else {
+
         wrapper.className =
           "message-wrapper ai-wrapper";
+
       }
 
       const message =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       message.className =
         role === "user"
@@ -673,11 +772,16 @@
       message.textContent =
         content;
 
-      wrapper.appendChild(message);
+      wrapper.appendChild(
+        message
+      );
 
-      chat.appendChild(wrapper);
+      chat.appendChild(
+        wrapper
+      );
 
       return message;
+
     }
 
     /* =========================
@@ -685,8 +789,11 @@
     ========================= */
 
     function startNewChat() {
+
       if (button.disabled) {
+
         return;
+
       }
 
       const currentConversation =
@@ -697,34 +804,39 @@
         currentConversation.messages.length > 0;
 
       if (hasMessages) {
+
         const confirmed =
           confirm(
             "Mulai chat baru?\n\nPercakapan saat ini tetap tersimpan di browser."
           );
 
         if (!confirmed) {
-          return;
-        }
-      }
 
-      /*
-        Jangan hapus percakapan lama.
-        Buat percakapan baru.
-      */
+          return;
+
+        }
+
+      }
 
       createConversation();
 
       renderActiveConversation();
 
       input.value = "";
+
       input.disabled = false;
 
       button.disabled = false;
-      button.textContent = "Kirim";
+
+      newChatButton.disabled = false;
+
+      button.textContent =
+        "Kirim";
 
       input.focus();
 
       chat.scrollTop = 0;
+
     }
 
     /* =========================
@@ -732,6 +844,7 @@
     ========================= */
 
     async function sendMessage() {
+
       const message =
         input.value.trim();
 
@@ -739,17 +852,22 @@
         !message ||
         button.disabled
       ) {
+
         return;
+
       }
 
       const conversation =
         getActiveConversation();
 
       if (!conversation) {
+
         createConversation();
+
       }
 
-      welcome.style.display = "none";
+      welcome.style.display =
+        "none";
 
       /* Simpan pesan user */
 
@@ -768,28 +886,37 @@
       input.value = "";
 
       button.disabled = true;
-      newChatButton.disabled = true;
+
+      newChatButton.disabled =
+        true;
+
       input.disabled = true;
 
       button.textContent =
         "Menjawab...";
 
-      /* AI thinking */
+      /* AI THINKING */
 
       const aiWrapper =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       aiWrapper.className =
         "message-wrapper ai-wrapper";
 
       const aiMessage =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       aiMessage.className =
         "message ai";
 
       const thinking =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       thinking.className =
         "thinking";
@@ -817,6 +944,7 @@
         chat.scrollHeight;
 
       try {
+
         const response =
           await fetch(
             "/api/chat",
@@ -829,7 +957,8 @@
               },
 
               body: JSON.stringify({
-                message: message
+                message:
+                  message
               })
             }
           );
@@ -838,10 +967,12 @@
           await response.json();
 
         if (!response.ok) {
+
           throw new Error(
             data.error ||
             "Terjadi kesalahan pada server."
           );
+
         }
 
         const reply =
@@ -861,6 +992,7 @@
         );
 
       } catch (error) {
+
         console.error(
           "Nexora error:",
           error
@@ -879,10 +1011,14 @@
           "ai",
           errorMessage
         );
+
       }
 
       button.disabled = false;
-      newChatButton.disabled = false;
+
+      newChatButton.disabled =
+        false;
+
       input.disabled = false;
 
       button.textContent =
@@ -892,6 +1028,7 @@
 
       chat.scrollTop =
         chat.scrollHeight;
+
     }
 
     /* =========================
@@ -911,9 +1048,15 @@
     input.addEventListener(
       "keydown",
       function(event) {
-        if (event.key === "Enter") {
+
+        if (
+          event.key === "Enter"
+        ) {
+
           sendMessage();
+
         }
+
       }
     );
 
@@ -930,14 +1073,18 @@
     if (
       "serviceWorker" in navigator
     ) {
+
       window.addEventListener(
         "load",
         () => {
+
           navigator.serviceWorker.register(
             "/service-worker.js"
           );
+
         }
       );
+
     }
   </script>
 
