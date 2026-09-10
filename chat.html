@@ -1,13 +1,20 @@
-<!DOCTYPE html><html lang="id"><head>
+<!DOCTYPE html>
+<html lang="id">
+<head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Nexora AI</title><meta
-name="description"
-content="Nexora AI - Intelligent technology for a smarter future."
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-«»
+  <title>Nexora AI</title>
+
+  <meta
+    name="description"
+    content="Nexora AI - Intelligent technology for a smarter future."
+  >
 
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#050505">  <style>
+  <meta name="theme-color" content="#050505">
+
+  <style>
     * {
       margin: 0;
       padding: 0;
@@ -324,6 +331,13 @@ content="Nexora AI - Intelligent technology for a smarter future."
       font-weight: 700;
     }
 
+    .history-count {
+      margin-left: 6px;
+      color: #666666;
+      font-size: 12px;
+      font-weight: 400;
+    }
+
     .close-history {
       width: 38px;
       height: 38px;
@@ -372,8 +386,9 @@ content="Nexora AI - Intelligent technology for a smarter future."
       background: transparent;
       color: #dddddd;
       border: 1px solid transparent;
-      border-radius: 11px;
+      border-radius: 12px;
       cursor: pointer;
+      transition: 0.18s ease;
     }
 
     .history-item:hover {
@@ -385,7 +400,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
     .history-item.active {
       background: #151515;
-      border-color: #2b2b2b;
+      border-color: #303030;
     }
 
     .history-item-content {
@@ -394,12 +409,34 @@ content="Nexora AI - Intelligent technology for a smarter future."
       padding: 3px 4px;
     }
 
+    .history-item-title-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+
     .history-item-title {
+      flex: 1;
+      min-width: 0;
       font-size: 14px;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .history-active-label {
+      flex-shrink: 0;
+      padding: 3px 6px;
+      border-radius: 6px;
+      background: #222222;
+      border: 1px solid #333333;
+      color: #aaaaaa;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .history-item-date {
@@ -421,7 +458,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
       color: #777777;
       border: 1px solid transparent;
       border-radius: 8px;
-      font-size: 17px;
+      font-size: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -475,92 +512,143 @@ content="Nexora AI - Intelligent technology for a smarter future."
       .history-panel {
         width: 88%;
       }
+
+      .history-item {
+        padding: 9px;
+      }
+
+      .history-item-title {
+        font-size: 13px;
+      }
+
+      .history-active-label {
+        font-size: 8px;
+      }
     }
-  </style></head><body>  <!-- =========================
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
        HISTORY PANEL
-  ========================= -->  <div
+  ========================= -->
+
+  <div
     id="historyOverlay"
     class="history-overlay"
-  ></div>  <aside
+  ></div>
+
+  <aside
     id="historyPanel"
     class="history-panel"
-  ><div class="history-header">
-
-  <div class="history-title">
-    Chat History
-  </div>
-
-  <button
-    id="closeHistoryButton"
-    class="close-history"
-    aria-label="Tutup"
   >
-    ×
-  </button>
 
-</div>
+    <div class="history-header">
 
-<div
-  id="historyList"
-  class="history-list"
-></div>
+      <div class="history-title">
+        Chat History
+        <span
+          id="historyCount"
+          class="history-count"
+        ></span>
+      </div>
 
-  </aside>  <!-- =========================
+      <button
+        id="closeHistoryButton"
+        class="close-history"
+        aria-label="Tutup"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div
+      id="historyList"
+      class="history-list"
+    ></div>
+
+  </aside>
+
+
+  <!-- =========================
        HEADER
-  ========================= -->  <header><button
-  id="historyButton"
-  class="history-button"
-  aria-label="Chat History"
-  title="Chat History"
->
-  ☰
-</button>
+  ========================= -->
 
-<div class="logo">
-  NEXORA AI
-</div>
+  <header>
 
-  </header>  <!-- =========================
+    <button
+      id="historyButton"
+      class="history-button"
+      aria-label="Chat History"
+      title="Chat History"
+    >
+      ☰
+    </button>
+
+    <div class="logo">
+      NEXORA AI
+    </div>
+
+  </header>
+
+
+  <!-- =========================
        CHAT
-  ========================= -->  <main
+  ========================= -->
+
+  <main
     id="chat"
     class="chat"
-  ><div
-  id="welcome"
-  class="welcome"
->
+  >
 
-  <h1>Halo, saya Nexora AI.</h1>
+    <div
+      id="welcome"
+      class="welcome"
+    >
 
-  <p>
-    Apa yang ingin kamu lakukan hari ini?
-  </p>
+      <h1>Halo, saya Nexora AI.</h1>
 
-</div>
+      <p>
+        Apa yang ingin kamu lakukan hari ini?
+      </p>
 
-  </main>  <!-- =========================
+    </div>
+
+  </main>
+
+
+  <!-- =========================
        INPUT AREA
-  ========================= -->  <div class="input-area"><button
-  id="newChatButton"
-  class="new-chat-button"
-  aria-label="Chat baru"
-  title="Chat baru"
->
-  +
-</button>
+  ========================= -->
 
-<input
-  id="messageInput"
-  type="text"
-  placeholder="Tanyakan sesuatu kepada Nexora AI..."
-  autocomplete="off"
->
+  <div class="input-area">
 
-<button id="sendButton">
-  Kirim
-</button>
+    <button
+      id="newChatButton"
+      class="new-chat-button"
+      aria-label="Chat baru"
+      title="Chat baru"
+    >
+      +
+    </button>
 
-  </div>  <script>
+    <input
+      id="messageInput"
+      type="text"
+      placeholder="Tanyakan sesuatu kepada Nexora AI..."
+      autocomplete="off"
+    >
+
+    <button id="sendButton">
+      Kirim
+    </button>
+
+  </div>
+
+
+  <script>
 
     const input =
       document.getElementById("messageInput");
@@ -591,6 +679,9 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
     const historyList =
       document.getElementById("historyList");
+
+    const historyCount =
+      document.getElementById("historyCount");
 
 
     /* =========================
@@ -1016,6 +1107,16 @@ content="Nexora AI - Intelligent technology for a smarter future."
       historyList.innerHTML = "";
 
 
+      if (historyCount) {
+
+        historyCount.textContent =
+          conversations.length > 0
+            ? `(${conversations.length})`
+            : "";
+
+      }
+
+
       if (
         conversations.length === 0
       ) {
@@ -1060,10 +1161,12 @@ content="Nexora AI - Intelligent technology for a smarter future."
             "history-item";
 
 
-          if (
+          const isActive =
             conversation.id ===
-            activeChatId
-          ) {
+            activeChatId;
+
+
+          if (isActive) {
 
             item.classList.add(
               "active"
@@ -1081,6 +1184,15 @@ content="Nexora AI - Intelligent technology for a smarter future."
             "history-item-content";
 
 
+          const titleRow =
+            document.createElement(
+              "div"
+            );
+
+          titleRow.className =
+            "history-item-title-row";
+
+
           const title =
             document.createElement(
               "div"
@@ -1092,6 +1204,31 @@ content="Nexora AI - Intelligent technology for a smarter future."
           title.textContent =
             conversation.title ||
             "Percakapan baru";
+
+
+          titleRow.appendChild(
+            title
+          );
+
+
+          if (isActive) {
+
+            const activeLabel =
+              document.createElement(
+                "span"
+              );
+
+            activeLabel.className =
+              "history-active-label";
+
+            activeLabel.textContent =
+              "Aktif";
+
+            titleRow.appendChild(
+              activeLabel
+            );
+
+          }
 
 
           const date =
@@ -1110,7 +1247,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
 
           content.appendChild(
-            title
+            titleRow
           );
 
           content.appendChild(
@@ -1903,5 +2040,7 @@ content="Nexora AI - Intelligent technology for a smarter future."
 
     }
 
-  </script></body>
+  </script>
+
+</body>
 </html>
